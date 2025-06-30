@@ -28,10 +28,10 @@ pub(crate) mod parser;
 pub(crate) mod tag;
 
 /// Name of the configuration file.
-pub(crate) const CONFIG_NAME: &str = "config.json";
+pub(crate) const CONFIG_NAME: &str = "config.json"; // 配置文件名称
 
 /// Name of the login file.
-pub(crate) const LOGIN_NAME: &str = "login.json";
+pub(crate) const LOGIN_NAME: &str = "login.json";   // 登录文件名称
 
 /// Config that is used to do general setup.
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -42,7 +42,7 @@ pub(crate) struct Config {
     /// The file naming convention (e.g "md5", "id").
     #[serde(rename = "fileNamingConvention")]
     naming_convention: String,
-}
+} // 配置文件有两个选项，下载目录，检查文件是否已存在
 
 static CONFIG: OnceCell<Config> = OnceCell::new();
 
@@ -59,7 +59,7 @@ impl Config {
 
     /// Checks config and ensure it isn't missing.
     pub(crate) fn config_exists() -> bool {
-        if !Path::new(CONFIG_NAME).exists() {
+        if !Path::new(CONFIG_NAME).exists() {   // 文件不存在
             trace!("config.json: does not exist!");
             return false;
         }
@@ -68,7 +68,8 @@ impl Config {
     }
 
     /// Creates config file.
-    pub(crate) fn create_config() -> Result<(), Error> {
+    pub(crate) fn create_config() -> Result<(), Error> { 
+        // 创建配置文件 
         let json = to_string_pretty(&Config::default())?;
         write(Path::new(CONFIG_NAME), json)?;
 
@@ -116,7 +117,7 @@ impl Default for Config {
 #[derive(Serialize, Deserialize, Clone)]
 pub(crate) struct Login {
     /// Username of user.
-    #[serde(rename = "Username")]
+    #[serde(rename = "Username")]   
     username: String,
     /// The password hash (also known as the API key) for the user.
     #[serde(rename = "APIKey")]
@@ -209,7 +210,7 @@ impl Default for Login {
 ///
 /// # Arguments
 ///
-/// * `error`: The error message to print.
+/// * `error`: The error message to print.6
 pub(crate) fn emergency_exit(error: &str) {
     info!("{error}");
     println!("Press ENTER to close the application...");

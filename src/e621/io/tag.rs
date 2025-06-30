@@ -63,7 +63,7 @@ pub(crate) struct Tag {
 }
 
 impl Tag {
-    fn new(tag: &str, category: TagSearchType, tag_type: TagType) -> Self {
+    pub(crate) fn new(tag: &str, category: TagSearchType, tag_type: TagType) -> Self {
         Tag {
             name: String::from(tag),
             search_type: category,
@@ -85,6 +85,8 @@ impl Tag {
     pub(crate) fn tag_type(&self) -> &TagType {
         &self.tag_type
     }
+
+
 }
 
 impl Default for Tag {
@@ -103,7 +105,7 @@ pub(crate) struct Group {
     /// The name of group.
     name: String,
     /// A [Vec] containing all the tags parsed.
-    tags: Vec<Tag>,
+    pub(crate) tags: Vec<Tag>,
 }
 
 impl Group {
@@ -139,8 +141,7 @@ pub(crate) fn parse_tag_file(request_sender: &RequestSender) -> Result<Vec<Group
                 .with_context(|| {
                     error!("Unable to read tag file!");
                     "Possible I/O block when trying to read tag file..."
-                })
-                .unwrap(),
+                })?,
         ),
         request_sender: request_sender.clone(),
     }

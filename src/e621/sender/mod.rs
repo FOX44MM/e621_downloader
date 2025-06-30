@@ -281,7 +281,7 @@ impl RequestSender {
     /// returns: Vec<u8, Global>
     pub(crate) fn download_image(&self, url: &str, file_size: i64) -> Vec<u8> {
         let mut image_response = self.check_response(self.client.get(url).send());
-        let mut image_bytes: Vec<u8> = Vec::with_capacity(file_size as usize);
+        let mut image_bytes: Vec<u8> = Vec::with_capacity(file_size as usize);  // 创建图像字节
         image_response
             .copy_to(&mut image_bytes)
             .with_context(|| "Failed to download image!".to_string())

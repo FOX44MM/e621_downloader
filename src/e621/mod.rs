@@ -81,9 +81,12 @@ impl E621WebConnector {
 
         trace!("Safe mode decision: {confirm_prompt}");
         if confirm_prompt {
-            self.request_sender.update_to_safe();
-            self.grabber.set_safe_mode(true);
+            self.set_save()
         }
+    }
+    pub(crate) fn set_save(&mut self) {
+        self.request_sender.update_to_safe();
+        self.grabber.set_safe_mode(true);
     }
 
     /// Processes the blacklist and tokenizes for use when grabbing posts.
@@ -113,6 +116,12 @@ impl E621WebConnector {
     pub(crate) fn grab_all(&mut self, groups: &[Group]) {
         trace!("Grabbing posts...");
         self.grabber.grab_favorites();
+        self.grabber.grab_posts_by_tags(groups);
+    }
+
+    pub(crate) fn grab_all_by_tag(&mut self, groups: &[Group]) {
+        trace!("Grabbing posts...");
+        // self.grabber.grab_favorites();
         self.grabber.grab_posts_by_tags(groups);
     }
 

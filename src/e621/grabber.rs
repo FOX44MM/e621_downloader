@@ -409,19 +409,19 @@ impl Grabber {
             .get_entry_from_appended_id(tag.name(), "single");
         let id = entry.id;
 
-        if self.safe_mode {
+        if self.safe_mode { // 启用安全模式
             match entry.rating.as_str() {
-                "s" => {
+                "s" => {    // 图像安全
                     self.add_single_post(entry, id);
                 }
-                _ => {
+                _ => {  // 不安全，显示跳过
                     info!(
                         "Skipping Post: {} due to being explicit or questionable",
                         console::style(format!("\"{id}\"")).color256(39).italic()
                     );
                 }
             }
-        } else {
+        } else {    // 不启用安全模式
             self.add_single_post(entry, id);
         }
     }

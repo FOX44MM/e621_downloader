@@ -18,13 +18,13 @@ use std::env::current_dir;
 use std::fs::write;
 use std::path::Path;
 
-use console::Term;
 use anyhow::Error;
+use console::Term;
 
-use crate::e621::E621WebConnector;
-use crate::e621::io::{Config, emergency_exit, Login};
-use crate::e621::io::tag::{parse_tag_file, TAG_FILE_EXAMPLE, TAG_NAME};
+use crate::e621::io::tag::{parse_tag_file, Group, TAG_FILE_EXAMPLE, TAG_NAME};
+use crate::e621::io::{emergency_exit, Config, Login};
 use crate::e621::sender::RequestSender;
+use crate::e621::E621WebConnector;
 
 /// The name of the cargo package.
 const NAME: &str = env!("CARGO_PKG_NAME");
@@ -46,7 +46,7 @@ impl Program {
 
     /// Runs the downloader program.
     pub(crate) fn run(&self) -> Result<(), Error> {
-        Term::stdout().set_title("e621 downloader");
+        Term::stdout().set_title("e621 downloader"); // 将命令行标题设置为e621 downloader
         trace!("Starting e621 downloader...");
         trace!("Program Name: {}", NAME);
         trace!("Program Version: {}", VERSION);
@@ -62,16 +62,18 @@ impl Program {
         // Check the config file and ensures that it is created.
         trace!("Checking if config file exists...");
         if !Config::config_exists() {
+            // 如果配置文件不存在
             trace!("Config file doesn't exist...");
             info!("Creating config file...");
-            Config::create_config()?;
+            Config::create_config()?; // 创建配置文件
         }
 
         // Create tag if it doesn't exist.
         trace!("Checking if tag file exists...");
         if !Path::new(TAG_NAME).exists() {
+            // 如果标签文件不存在
             info!("Tag file does not exist, creating tag file...");
-            write(TAG_NAME, TAG_FILE_EXAMPLE)?;
+            write(TAG_NAME, TAG_FILE_EXAMPLE)?; // 写入文件内容
             trace!("Tag file \"{}\" created...", TAG_NAME);
 
             emergency_exit(
@@ -110,5 +112,20 @@ impl Program {
         info!("Exiting...");
 
         Ok(())
+    }
+
+    pub(crate) fn run_in_arg(&self, groups: &[Group], safe: bool) {
+        let request_sender = RequestSender::new();
+        let mut connector = E621WebConnector::new(&request_sender);
+
+        if safe {
+            connector.set_save()
+        }
+
+        connector.grab_all_by_tag(groups);
+        connector.download_posts();
+
+        info!("Finished downloading posts!");
+        info!("Exiting...");
     }
 }
